@@ -158,16 +158,19 @@ print(df.isnull().sum())
 
 8. Handle invalid numerical values
    
-# Distance cannot be zero/negative
+Distance cannot be zero/negative
+
 df.loc[df["Distance_km"] <= 0, "Distance_km"] = np.nan
 
-# Weight cannot be zero/negative
+ Weight cannot be zero/negative
+ 
 df.loc[df["Shipment_Weight_kg"] <= 0, "Shipment_Weight_kg"] = np.nan
 
-# Shipping cost cannot be zero/negative
+Shipping cost cannot be zero/negative
+
 df.loc[df["Shipping_Cost_INR"] <= 0, "Shipping_Cost_INR"] = np.nan
 
-# Customer rating should be between 1 and 5
+ Customer rating should be between 1 and 5
 df.loc[
     (df["Customer_Rating"] < 1) |
     (df["Customer_Rating"] > 5),

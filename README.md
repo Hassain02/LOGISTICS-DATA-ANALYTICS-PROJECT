@@ -1,300 +1,493 @@
-# LOGISTICS-DATA-ANALYTICS-PROJECT
-The project simulates a multi-city logistics operation handling shipments through warehouses and multiple transport modes and carriers. Management wants to improve delivery reliability while controlling transportation and warehouse costs.
-Project Objectives
-•	Define a realistic logistics delivery-performance problem and measurable KPIs.
-•	Prepare a reliable analytical dataset from intentionally unclean shipment records.
-•	Identify delivery, cost and operational patterns using Python-based EDA.
-•	Develop and evaluate a predictive model for actual delivery duration.
+# Logistics Data Analytics Project
 
-WEEK 1 – Strategic Planning and Data Exploration
+## Project Overview
 
-1. Logistics Scenario
-  The project simulates a multi-city logistics operation handling shipments through warehouses and multiple transport modes and carriers. Management wants to       improve delivery reliability while controlling transportation and warehouse costs.
-2. Business Problem
-  The business needs to understand the factors associated with late deliveries and high shipment costs, identify performance differences among carriers and         transport modes, and establish an analytical process that can support future operational decisions.
-3. KPIs
- KPI	 Value
-Total Shipments	12000.00
-On-Time Delivery Rate	60.84
-Average Delivery Days	3.78
-Average Shipping Cost (INR)	11632.44
-Average Customer Rating	3.00
-Average Warehouse Processing Hours	11.99
-4. Data Science Methods
-•	Regression to forecast actual delivery duration.
-•	Clustering as a possible future method for grouping similar shipments or operational segments.
-•	Optimization to support carrier/resource allocation and cost minimization.
-•	EDA and visualization to diagnose bottlenecks and cost drivers.
-5. Roadmap
-Data collection → Data-quality assessment → Cleaning/preprocessing → EDA → Visualization → Predictive modeling → Evaluation → Optimization recommendations
-6. Python Illustration
-Import pandas as pd 
-df= pd.read_excel(r"C:\Users\LENOVO\Downloads\Unclean_Logistics_Dataset_12000plus_Rows.xlsx")
-df.shape
-df.dtypes
-df.info()
-df.describe(include=’all’)
-df.isnull().sum()
-This completes the strategic foundation for the project and establishes the variables and KPIs to be examined in later weeks.
+This project simulates a multi-city logistics operation handling shipments through multiple warehouses, transport modes, and logistics carriers.
 
+The main objective is to analyze shipment delivery performance, identify cost and operational patterns, compare carrier and transport-mode performance, and establish a data analytics workflow that can support future logistics decisions.
 
-WEEK 2 – Data Collection, Cleaning and Preprocessing
+The project follows a week-wise data analytics approach:
 
+**Strategic Planning → Data Cleaning → Exploratory Data Analysis → Predictive Modeling → Business Recommendations**
 
-The raw dataset contained 12,150 rows and 21 columns. After replacing blank strings with missing values, 150 duplicate rows were identified and removed. Categorical variables were standardized, dates were parsed, numeric fields were validated, missing values were imputed, and selected outliers were capped using the IQR method.
-1. Issues Identified
-•	Missing values in rating, carrier, distance, processing time, temperature and product category.
-•	Duplicate shipment records.
-•	Inconsistent capitalization and whitespace.
-•	Mixed date representations.
-•	Non-positive distance, weight and shipping-cost values.
-•	Extreme shipping-cost and delivery-time observations.
-•	Blank strings that required conversion to true missing values.
-2. Cleaning Actions
-•	Blank strings converted to missing values.
-•	Exact duplicate records removed.
-•	Categorical text trimmed and standardized.
-•	Date columns converted to datetime.
-•	Numeric columns converted to numeric types.
-•	Impossible non-positive values converted to missing values.
-•	Missing numeric values filled with medians; categorical values filled with modes.
-•	Selected numerical outliers detected with the IQR rule and capped rather than blindly deleting observations.
-•	Derived fields created: delivery delay, late-delivery flag, cost per km, order week and order month.
-3. Cleaning Summary
-Measure	Result
-Raw rows	12150
-Raw columns	21
-Duplicate rows removed	150
-Invalid distance values	30
-Invalid weight values	25
-Invalid cost values	20
-Invalid ratings	0
-Cleaned rows	12000
-4. Python Cleaning Illustration
-import pandas as pd
-import numpy as np
+## Project Objectives
 
-Load the dataset
+The project aims to:
 
-df = pd.read_excel(r"C:\Users\LENOVO\Downloads\Unclean_Logistics_Dataset_12000plus_Rows.xlsx")
-    
+* Define a realistic logistics delivery-performance problem.
+* Identify measurable logistics KPIs.
+* Prepare a reliable analytical dataset from intentionally unclean shipment records.
+* Perform data cleaning and preprocessing using Python.
+* Analyze delivery reliability and transportation costs.
+* Compare performance across carriers and transport modes.
+* Analyze weekly operational trends.
+* Identify relationships between logistics variables using correlation analysis.
+* Develop a predictive model for actual delivery duration in the next stage of the project.
 
-1. Define column groups
-categorical_columns = [
-    "Origin",
-    "Destination",
-    "Transport_Mode",
-    "Carrier",
-    "Shipment_Status",
-    "Warehouse_ID",
-    "Product_Category"
-]
+## Dataset
 
-date_columns = [
-    "Order_Date",
-    "Ship_Date",
-    "Delivery_Date"
-]
+The project uses an intentionally unclean logistics shipment dataset.
 
-numeric_columns = [
-    "Distance_km",
-    "Shipment_Weight_kg",
-    "Quantity",
-    "Shipping_Cost_INR",
-    "Promised_Delivery_Days",
-    "Actual_Delivery_Days",
-    "Customer_Rating",
-    "Fuel_Surcharge_INR",
-    "Warehouse_Processing_Hours",
-    "Temperature_C"
-]
+### Raw Dataset
 
-2. Replace blank cells with missing values
+* **Rows:** 12,150
+* **Columns:** 21
+* **Duplicate records:** 150
+* **Cleaned records:** 12,000
 
-df = df.replace(r"^\s*$", pd.NA, regex=True)
+The raw dataset contains realistic data-quality issues such as:
 
- 3. Remove duplicate rows
+* Missing values
+* Duplicate records
+* Inconsistent capitalization
+* Leading/trailing whitespace
+* Mixed date formats
+* Invalid numerical values
+* Non-positive distance, weight, and shipping-cost values
+* Extreme values and outliers
+* Blank cells
 
-print("Duplicates before:", df.duplicated().sum())
+### Main Variables
 
-df = df.drop_duplicates()
+The dataset contains information related to:
 
-print("Duplicates after:", df.duplicated().sum())
+* Shipment ID
+* Origin
+* Destination
+* Order Date
+* Ship Date
+* Delivery Date
+* Transport Mode
+* Carrier
+* Shipment Status
+* Warehouse ID
+* Product Category
+* Distance
+* Shipment Weight
+* Quantity
+* Shipping Cost
+* Promised Delivery Days
+* Actual Delivery Days
+* Customer Rating
+* Fuel Surcharge
+* Warehouse Processing Hours
+* Temperature
 
+# Week 1 – Strategic Planning and Data Exploration
 
- 4. Clean categorical columns
+## Logistics Scenario
 
-for col in categorical_columns:
-    df[col] = (
-        df[col]
-        .astype("string")
-        .str.strip()
-        .str.title()
-    )
+The project simulates a multi-city logistics operation where shipments are processed through warehouses and delivered using multiple transportation modes and carriers.
 
- 5. Convert date columns
+Management wants to improve delivery reliability while controlling transportation and warehouse-related costs.
 
-for col in date_columns:
-    df[col] = pd.to_datetime(
-        df[col],
-        errors="coerce",
-        dayfirst=True
-    )
+## Business Problem
+
+The business needs to understand:
+
+* Factors associated with late deliveries.
+* Factors associated with high shipment costs.
+* Differences in performance among carriers.
+* Differences between transportation modes.
+* Weekly changes in delivery performance.
+* Relationships between operational and cost variables.
+
+The analysis is intended to support future operational decision-making.
+
+## Key KPIs
+
+| KPI                                |      Value |
+| ---------------------------------- | ---------: |
+| Total Shipments                    |     12,000 |
+| On-Time Delivery Rate              |     60.84% |
+| Average Delivery Days              |       3.78 |
+| Average Shipping Cost              | ₹11,632.44 |
+| Average Customer Rating            |       3.00 |
+| Average Warehouse Processing Hours |      11.99 |
+
+## Data Science Methods
+
+The project considers the following analytical methods:
+
+* **Exploratory Data Analysis (EDA):** Identify delivery, cost, and operational patterns.
+* **Regression:** Predict actual delivery duration.
+* **Clustering:** Potentially group similar shipments or operational segments.
+* **Optimization:** Support carrier/resource allocation and cost minimization.
+* **Visualization:** Communicate logistics performance and identify bottlenecks.
+
+## Project Roadmap
+
+text
+Data Collection
+      ↓
+Data Quality Assessment
+      ↓
+Data Cleaning & Preprocessing
+      ↓
+Exploratory Data Analysis
+      ↓
+Visualization
+      ↓
+Predictive Modeling
+      ↓
+Model Evaluation
+      ↓
+Optimization & Recommendations
 
 
- 6. Convert numerical columns
+# Week 2 – Data Collection, Cleaning and Preprocessing
 
-for col in numeric_columns:
-    df[col] = pd.to_numeric(
-        df[col],
-        errors="coerce"
-    )
+The raw dataset contained 12,150 rows and 21 columns.
 
-7. Check missing values
+After cleaning, 150 duplicate records were removed, resulting in a final analytical dataset containing 12,000 records.
 
-print("\nMissing values:")
-print(df.isnull().sum())
+## Data Quality Issues Identified
 
+The raw dataset contained:
 
-8. Handle invalid numerical values
-   
-Distance cannot be zero/negative
+* Missing customer ratings.
+* Missing carrier information.
+* Missing distance values.
+* Missing warehouse processing values.
+* Missing temperature values.
+* Missing product categories.
+* Duplicate shipment records.
+* Inconsistent capitalization.
+* Extra whitespace.
+* Mixed date formats.
+* Invalid distance values.
+* Invalid shipment weight values.
+* Invalid shipping-cost values.
+* Extreme delivery-time observations.
+* Extreme shipping-cost observations.
+* Blank cells.
 
-df.loc[df["Distance_km"] <= 0, "Distance_km"] = np.nan
+## Cleaning Actions
 
- Weight cannot be zero/negative
- 
-df.loc[df["Shipment_Weight_kg"] <= 0, "Shipment_Weight_kg"] = np.nan
+The following preprocessing steps were performed:
 
-Shipping cost cannot be zero/negative
+1. Blank strings were converted to missing values.
+2. Exact duplicate records were identified and removed.
+3. Categorical variables were trimmed and standardized.
+4. Date columns were converted to datetime format.
+5. Numerical columns were converted to numeric data types.
+6. Invalid non-positive distance values were converted to missing values.
+7. Invalid non-positive weight values were converted to missing values.
+8. Invalid non-positive shipping costs were converted to missing values.
+9. Customer ratings outside the 1–5 range were treated as invalid.
+10. Missing numerical values were filled using median values.
+11. Missing categorical values were filled using mode values.
+12. Missing dates were forward/backward filled.
+13. Selected numerical outliers were identified using the IQR method and capped.
+14. Additional analytical variables were created.
 
-df.loc[df["Shipping_Cost_INR"] <= 0, "Shipping_Cost_INR"] = np.nan
+## Derived Variables
 
- Customer rating should be between 1 and 5
-df.loc[
-    (df["Customer_Rating"] < 1) |
-    (df["Customer_Rating"] > 5),
-    "Customer_Rating"
-] = np.nan
+The following features were created during preprocessing:
 
+### Delivery Delay
 
- 9. Fill missing numerical values with median
+Delivery_Delay_Days =
+Actual_Delivery_Days - Promised_Delivery_Days
 
+### Late Delivery Flag
 
-for col in numeric_columns:
-    df[col] = df[col].fillna(df[col].median())
+Late_Delivery = 1
+when actual delivery exceeded promised delivery time.
 
+### Cost per Kilometre
 
-10. Fill missing categorical values with mode
-
-
-for col in categorical_columns:
-    if df[col].isnull().any():
-        mode_value = df[col].mode()[0]
-        df[col] = df[col].fillna(mode_value)
-
- 11. Fill missing dates
-
-for col in date_columns:
-    df[col] = df[col].ffill().bfill()
-
- 12. Create useful logistics features
-
-df["Delivery_Delay_Days"] = (
-    df["Actual_Delivery_Days"]
-    - df["Promised_Delivery_Days"]
-)
-
-df["Late_Delivery"] = (
-    df["Delivery_Delay_Days"] > 0
-).astype(int)
-
-df["Cost_per_km"] = (
-    df["Shipping_Cost_INR"] /
-    df["Distance_km"]
-)
-
-df["Order_Week"] = (
-    df["Order_Date"]
-    .dt.isocalendar()
-    .week
-)
-
-df["Order_Month"] = (
-    df["Order_Date"]
-    .dt.to_period("M")
-    .astype(str)
-)
-
- 13. Final verification
-
-print("\nFinal dataset shape:")
-print(df.shape)
-
-print("\nRemaining missing values:")
-print(df.isnull().sum().sum())
-
-print("\nFirst 5 rows:")
-display(df.head())
-The cleaned dataset is saved separately as Cleaned_Logistics_Dataset_Final.xlsx so the raw evidence is preserved.
+Cost_per_km =
+Shipping_Cost_INR / Distance_km
 
 
-WEEK 3 – Advanced Data Analysis and Visualization
+### Order Week
 
-The cleaned dataset was analyzed to understand delivery reliability, cost patterns, carrier performance, transport-mode differences and weekly operational trends.
-3.1 Carrier Performance
-Carrier	Shipments	Avg_Delivery_Days	On_Time_Rate	Avg_Cost_INR
-Bluedart	1742	3.75	62.86	11344.29
-Fedex	1558	3.71	61.75	11524.09
-Dhl	3726	3.81	60.31	11705.46
-Delhivery	3261	3.78	60.29	11681.29
-Ecom Express	1713	3.80	60.19	11772.20
-3.2 Transport Mode Performance
-Transport_Mode	Shipments	Avg_Delivery_Days	On_Time_Rate	Avg_Cost_INR
-Rail	3995	3.76	62.25	11822.99
-Road	4002	3.79	60.29	11548.19
-Air	4003	3.79	59.98	11526.51
-3.3 Weekly Performance
-Order_Week	Shipments	Avg_Delivery_Days	On_Time_Rate	Avg_Shipping_Cost
-1.00	453.00	3.78	56.73	12169.06
-2.00	584.00	3.65	61.13	11610.72
-5.00	155.00	3.36	64.52	12380.55
-6.00	600.00	3.71	62.83	11829.88
-7.00	238.00	3.61	60.50	11549.13
-9.00	152.00	3.97	62.50	12130.34
-10.00	600.00	3.83	57.67	11453.26
-11.00	245.00	3.69	62.04	11494.49
-14.00	554.00	3.65	64.44	11341.21
-15.00	536.00	3.82	59.14	11811.71
-18.00	234.00	4.00	61.54	11623.81
-19.00	594.00	3.85	61.28	11318.82
-3.4 Correlation Matrix
-index	Distance_km	Shipment_Weight_kg	Quantity	Shipping_Cost_INR	Promised_Delivery_Days	Actual_Delivery_Days	Customer_Rating	Fuel_Surcharge_INR	Warehouse_Processing_Hours	Temperature_C
-Distance_km	1.00	-0.01	0.01	0.83	-0.00	0.00	-0.00	0.78	-0.00	-0.00
-Shipment_Weight_kg	-0.01	1.00	-0.00	0.07	-0.02	-0.01	0.00	-0.01	0.01	-0.00
-Quantity	0.01	-0.00	1.00	-0.01	-0.01	-0.01	0.00	0.00	-0.01	0.01
-Shipping_Cost_INR	0.83	0.07	-0.01	1.00	0.00	0.02	0.00	0.66	-0.01	0.00
-Promised_Delivery_Days	-0.00	-0.02	-0.01	0.00	1.00	0.72	-0.01	-0.00	0.01	-0.01
-Actual_Delivery_Days	0.00	-0.01	-0.01	0.02	0.72	1.00	-0.02	-0.00	-0.00	-0.00
-Customer_Rating	-0.00	0.00	0.00	0.00	-0.01	-0.02	1.00	-0.00	-0.01	0.00
-Fuel_Surcharge_INR	0.78	-0.01	0.00	0.66	-0.00	-0.00	-0.00	1.00	-0.00	-0.00
-Warehouse_Processing_Hours	-0.00	0.01	-0.01	-0.01	0.01	-0.00	-0.01	-0.00	1.00	0.01
-Temperature_C	-0.00	-0.00	0.01	0.00	-0.01	-0.00	0.00	-0.00	0.01	1.00
- 
-Distribution of Actual Delivery Days
- 
-On-Time Delivery Rate by Carrier
- 
-Average Shipping Cost by Transport Mode
- 
-Shipping Cost vs Distance
- 
-Weekly On-Time Delivery Rate
-3.5 Findings
-The prepared dataset has an overall on-time delivery rate of 60.84% and an average actual delivery time of 3.78 days. Carrier and transport-mode comparisons show that operational performance differs across categories, so allocation decisions should consider both reliability and cost rather than a single KPI. The weekly chart provides a simple monitoring mechanism for identifying changes in service performance over time. The cost-versus-distance chart can be used to investigate routes with unusually high expenditure. Correlation analysis provides a first diagnostic view of relationships among numerical variables, while recognizing that correlation does not establish causation.
+The order date was converted into an ISO calendar week to support weekly performance analysis.
+
+### Order Month
+
+The order date was also converted into a month-based analytical variable.
+
+## Cleaning Summary
+
+| Measure                 | Result |
+| ----------------------- | -----: |
+| Raw Rows                | 12,150 |
+| Raw Columns             |     21 |
+| Duplicate Rows Removed  |    150 |
+| Invalid Distance Values |     30 |
+| Invalid Weight Values   |     25 |
+| Invalid Cost Values     |     20 |
+| Invalid Ratings         |      0 |
+| Final Cleaned Rows      | 12,000 |
+
+The cleaned dataset was saved separately so that the original raw dataset remained available as evidence of the data-cleaning process.
+
+
+# Week 3 – Advanced Data Analysis and Visualization
+
+The cleaned dataset was analyzed to understand:
+
+* Delivery reliability.
+* Carrier performance.
+* Transportation-mode performance.
+* Shipping-cost patterns.
+* Weekly delivery trends.
+* Relationships between numerical variables.
+* Delivery delays.
+
+## 3.1 Carrier Performance
+
+| Carrier      | Shipments | Avg Delivery Days | On-Time Rate | Avg Cost (INR) |
+| ------------ | --------: | ----------------: | -----------: | -------------: |
+| Bluedart     |     1,742 |              3.75 |       62.86% |      11,344.29 |
+| Fedex        |     1,558 |              3.71 |       61.75% |      11,524.09 |
+| Dhl          |     3,726 |              3.81 |       60.31% |      11,705.46 |
+| Delhivery    |     3,261 |              3.78 |       60.29% |      11,681.29 |
+| Ecom Express |     1,713 |              3.80 |       60.19% |      11,772.20 |
+
+### Observation
+
+Bluedart recorded the highest on-time delivery rate among the listed carriers at **62.86%** and also had the lowest average shipping cost among the carriers shown.
+
+Ecom Express had the lowest on-time delivery rate at **60.19%** and the highest average shipping cost at **₹11,772.20**.
+
+These results suggest that carrier selection should consider both reliability and cost.
 
 
 
+## 3.2 Transport Mode Performance
+
+| Transport Mode | Shipments | Avg Delivery Days | On-Time Rate | Avg Cost (INR) |
+| -------------- | --------: | ----------------: | -----------: | -------------: |
+| Rail           |     3,995 |              3.76 |       62.25% |      11,822.99 |
+| Road           |     4,002 |              3.79 |       60.29% |      11,548.19 |
+| Air            |     4,003 |              3.79 |       59.98% |      11,526.51 |
+
+### Observation
+
+Rail had the highest on-time delivery rate at **62.25%** and the shortest average delivery time at **3.76 days**.
+
+Air had the lowest on-time delivery rate at **59.98%**, despite having a slightly lower average cost than road and rail in this dataset.
+
+Therefore, transportation-mode selection should consider the required service level rather than assuming that faster or more expensive transportation automatically produces better delivery reliability.
 
 
+
+## 3.3 Weekly Performance
+
+Weekly analysis was performed using the `Order_Week` variable.
+
+The analysis tracks:
+
+* Shipment volume.
+* Average delivery duration.
+* On-time delivery rate.
+* Average shipping cost.
+
+### Key Weekly Observations
+
+* Week 5 recorded the highest on-time delivery rate among the displayed weeks at **64.52%**.
+* Week 14 recorded an on-time delivery rate of **64.44%**.
+* Week 1 recorded the lowest on-time delivery rate among the displayed weeks at **56.73%**.
+* Week 18 had the highest average delivery duration at **4.00 days**.
+* Week 5 had the highest average shipping cost at **₹12,380.55**.
+
+Weekly monitoring can help identify periods where operational performance changes significantly.
+
+
+
+# 3.4 Correlation Analysis
+
+Correlation analysis was performed on the main numerical logistics variables.
+
+Important relationships identified include:
+
+| Variable Pair                                  | Correlation |
+| ---------------------------------------------- | ----------: |
+| Distance vs Shipping Cost                      |        0.83 |
+| Distance vs Fuel Surcharge                     |        0.78 |
+| Shipping Cost vs Fuel Surcharge                |        0.66 |
+| Promised Delivery Days vs Actual Delivery Days |        0.72 |
+
+### Interpretation
+
+The strongest observed relationship is between **distance and shipping cost**, with a correlation of **0.83**. This indicates that longer shipment distances are strongly associated with higher shipping costs.
+
+Distance also has a strong positive relationship with fuel surcharge, with a correlation of **0.78**.
+
+Promised delivery duration and actual delivery duration have a correlation of **0.72**, indicating that promised delivery duration is strongly associated with actual delivery duration.
+
+Most other variables show weak relationships.
+
+Correlation analysis is used as an initial diagnostic tool. **Correlation does not establish causation**, so these relationships should be investigated further using predictive modeling and additional analysis.
+
+
+
+# 3.5 Visualizations
+
+The Week 3 analysis includes the following visualizations:
+
+### Distribution of Actual Delivery Days
+
+A histogram was used to understand the distribution and spread of actual shipment delivery times.
+
+### On-Time Delivery Rate by Carrier
+
+A bar chart was used to compare delivery reliability across carriers.
+
+### Average Shipping Cost by Transport Mode
+
+A bar chart was used to compare transportation costs across rail, road, and air.
+
+### Shipping Cost vs Distance
+
+A scatter plot was used to examine the relationship between shipment distance and shipping expenditure.
+
+### Weekly On-Time Delivery Rate
+
+A line chart was used to monitor changes in delivery reliability across order weeks.
+
+These visualizations provide an operational view of logistics performance and help identify potential areas for improvement.
+
+
+
+# Overall Findings
+
+The cleaned dataset has an overall on-time delivery rate of **60.84%** and an average actual delivery time of **3.78 days**.
+
+Carrier performance varies across both reliability and cost. Bluedart recorded the highest on-time delivery rate among the analyzed carriers, while Ecom Express recorded the lowest.
+
+Among transportation modes, rail showed the strongest on-time performance, while air recorded the lowest on-time rate in the analyzed dataset.
+
+Weekly analysis shows that delivery performance changes across different periods, making weekly monitoring useful for identifying operational fluctuations.
+
+The strong relationship between distance and shipping cost indicates that route distance is an important cost driver. Fuel surcharge also shows a strong relationship with distance.
+
+Overall, logistics decisions should not rely on a single KPI. Carrier reliability, transportation mode, delivery duration, shipment distance, and cost should be considered together.
+
+
+
+# Project Structure
+
+A suggested GitHub repository structure is:
+
+LOGISTICS-DATA-ANALYTICS-PROJECT/
+│
+├── README.md
+│
+├── data/
+│   ├── Unclean_Logistics_Dataset_12000plus_Rows.xlsx
+│   └── Cleaned_Logistics_Dataset_Final.xlsx
+│
+├── notebooks/
+│   ├── Week1_Strategic_Planning.ipynb
+│   ├── Week2_Data_Cleaning.ipynb
+│   ├── Week3_EDA.ipynb
+│   └── Week4_Predictive_Modeling.ipynb
+│
+├── reports/
+│   ├── Week1_Report.pdf
+│   ├── Week2_Report.pdf
+│   ├── Week3_Report.pdf
+│   └── Week4_Report.pdf
+│
+├── outputs/
+│   └── Week3_EDA_Results.xlsx
+│
+└── requirements.txt
+
+
+# Technologies Used
+
+The project uses Python-based data analytics tools.
+
+### Programming Language
+
+* Python
+
+### Libraries
+
+* Pandas
+* NumPy
+* Matplotlib
+* OpenPyXL
+* Scikit-learn *(for predictive modeling in Week 4)*
+
+### Development Environment
+
+* Jupyter Notebook
+* Anaconda
+
+# Expected Week 4 – Predictive Modeling
+
+The next stage of the project focuses on predictive modeling.
+
+The primary objective is to develop a model capable of predicting:
+
+Actual_Delivery_Days
+
+
+Potential input variables include:
+
+* Distance
+* Shipment Weight
+* Quantity
+* Transport Mode
+* Carrier
+* Promised Delivery Days
+* Warehouse Processing Hours
+* Temperature
+* Fuel Surcharge
+* Other relevant operational variables
+
+Potential regression models include:
+
+* Linear Regression
+* Decision Tree Regression
+* Random Forest Regression
+
+The models can be evaluated using appropriate regression metrics such as:
+
+* MAE
+* RMSE
+* R²
+
+The best-performing model can then be used to support logistics planning and delivery-duration estimation.
+
+
+# Business Recommendations
+
+Based on the Week 3 analysis:
+
+1. **Monitor carrier performance regularly** using on-time delivery rate and average delivery cost.
+
+2. **Consider both cost and reliability** when selecting carriers instead of optimizing only for shipping cost.
+
+3. **Evaluate transportation modes according to service requirements**, since the observed performance differs between rail, road, and air.
+
+4. **Monitor weekly delivery performance** to identify periods of declining service quality.
+
+5. **Investigate high-cost routes**, particularly shipments with unusually high cost relative to distance.
+
+6. **Use distance as an important cost-planning variable**, given its strong relationship with shipping cost.
+
+7. **Use predictive modeling in Week 4** to identify factors associated with actual delivery duration.
+
+
+# Conclusion
+
+This project establishes a complete logistics analytics workflow starting with an intentionally unclean dataset and progressing through data quality assessment, cleaning, preprocessing, exploratory analysis, visualization, and predictive modeling.
+
+The Week 1 analysis established the business problem and KPIs. Week 2 transformed the raw shipment records into a cleaner analytical dataset. Week 3 analyzed delivery reliability, transportation costs, carrier performance, transport modes, weekly trends, and numerical relationships.
+
+The next stage is predictive modeling, which can extend the analysis from understanding historical logistics performance to estimating future delivery duration.
+
+
+## Author
+
+**Logistics Data Analytics Project**
+
+**Tools:** Python | Pandas | NumPy | Matplotlib | Jupyter Notebook | Excel
 

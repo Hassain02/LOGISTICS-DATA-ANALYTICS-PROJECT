@@ -5,7 +5,9 @@ Project Objectives
 •	Prepare a reliable analytical dataset from intentionally unclean shipment records.
 •	Identify delivery, cost and operational patterns using Python-based EDA.
 •	Develop and evaluate a predictive model for actual delivery duration.
+
 WEEK 1 – Strategic Planning and Data Exploration
+
 1. Logistics Scenario
   The project simulates a multi-city logistics operation handling shipments through warehouses and multiple transport modes and carriers. Management wants to       improve delivery reliability while controlling transportation and warehouse costs.
 2. Business Problem
@@ -37,6 +39,8 @@ This completes the strategic foundation for the project and establishes the vari
 
 
 WEEK 2 – Data Collection, Cleaning and Preprocessing
+
+
 The raw dataset contained 12,150 rows and 21 columns. After replacing blank strings with missing values, 150 duplicate rows were identified and removed. Categorical variables were standardized, dates were parsed, numeric fields were validated, missing values were imputed, and selected outliers were capped using the IQR method.
 1. Issues Identified
 •	Missing values in rating, carrier, distance, processing time, temperature and product category.
@@ -231,9 +235,9 @@ display(df.head())
 The cleaned dataset is saved separately as Cleaned_Logistics_Dataset_Final.xlsx so the raw evidence is preserved.
 
 
-# ============================================================
-# WEEK 3 - LOGISTICS DATA EXPLORATORY DATA ANALYSIS (EDA)
-# ============================================================
+
+WEEK 3 - LOGISTICS DATA EXPLORATORY DATA ANALYSIS (EDA)
+
 
 import pandas as pd
 import numpy as np

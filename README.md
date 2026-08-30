@@ -485,8 +485,8 @@ The Week 1 analysis established the business problem and KPIs. Week 2 transforme
 The next stage is predictive modeling, which can extend the analysis from understanding historical logistics performance to estimating future delivery duration.
 
 
-## Author
-# Hassain sharief
+# Author
+ Hassain sharief
 
 **Logistics Data Analytics Project**
 

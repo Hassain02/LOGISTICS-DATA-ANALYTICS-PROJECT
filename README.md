@@ -74,7 +74,8 @@ Cleaned rows	12000
 import pandas as pd
 import numpy as np
 
-# Load the dataset
+Load the dataset
+
 df = pd.read_excel(r"C:\Users\LENOVO\Downloads\Unclean_Logistics_Dataset_12000plus_Rows.xlsx")
     
 
